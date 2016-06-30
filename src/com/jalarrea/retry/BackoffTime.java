@@ -3,7 +3,7 @@ package com.jalarrea.retry;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class Backoff {
+public class BackoffTime {
 
     private long ms = 100;
     private long max = 10000;
@@ -11,7 +11,7 @@ public class Backoff {
     private double jitter;
     private int attempts;
 
-    public Backoff() {}
+    public BackoffTime() {}
 
     public long duration() {
         BigInteger ms = BigInteger.valueOf(this.ms)
@@ -30,22 +30,22 @@ public class Backoff {
         this.attempts = 0;
     }
 
-    public Backoff setMin(long min) {
+    public BackoffTime setMin(long min) {
         this.ms = min;
         return this;
     }
 
-    public Backoff setMax(long max) {
+    public BackoffTime setMax(long max) {
         this.max = max;
         return this;
     }
 
-    public Backoff setFactor(int factor) {
+    public BackoffTime setFactor(int factor) {
         this.factor = factor;
         return this;
     }
 
-    public Backoff setJitter(double jitter) {
+    public BackoffTime setJitter(double jitter) {
         this.jitter = jitter;
         return this;
     }

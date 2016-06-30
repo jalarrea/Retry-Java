@@ -12,7 +12,7 @@ public class Retry {
 	private boolean skipReconnect;
 	private double _randomizationFactor;
 	private Options opts;
-	private Backoff backoff;
+	private BackoffTime backoff;
 	private long _timeout;
 	public ReadyState readyState;
 	
@@ -33,7 +33,7 @@ public class Retry {
         this.set_retryDelay(opts.retryDelay != 0 ? opts.retryDelay : 1000);
         this.set_retryDelayMax(opts.retryDelayMax != 0 ? opts.retryDelayMax : 5000);
         this.set_randomizationFactor(opts.randomizationFactor != 0.0 ? opts.randomizationFactor : 0.5);
-        this.backoff = new Backoff()
+        this.backoff = new BackoffTime()
                 .setMin(this.get_retryDelay())
                 .setMax(this.get_retryDelayMax())
                 .setJitter(this.get_randomizationFactor());
@@ -78,6 +78,7 @@ public class Retry {
 	
 	//This is the important function.
 	public boolean containerFunctions(){
+		// TODO: Contains the code to execute
 		return true;
 	}
 	
