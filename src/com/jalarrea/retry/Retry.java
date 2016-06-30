@@ -63,9 +63,11 @@ public class Retry {
                 	else{
                 		readyState = ReadyState.OPEN;
                         if(containerFunctions()){
-                        	set_retrying(false);
+                        	set_retrying(true);
+                        	backoff.reset();
+                        	readyState = ReadyState.CLOSED;
                         }else{
-                        	setSkipReconnect(true);
+                        	setSkipReconnect(false);
                         }
                 	}
                 	
@@ -74,7 +76,7 @@ public class Retry {
         }
     }
 	
-	//This is the import function.
+	//This is the important function.
 	public boolean containerFunctions(){
 		return true;
 	}
