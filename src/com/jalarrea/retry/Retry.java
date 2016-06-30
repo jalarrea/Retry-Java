@@ -6,20 +6,20 @@ import java.util.TimerTask;
 public class Retry {
 	
 	private boolean _retrying;
-	
 	private int _retryAttempts;
 	private long _retryDelay;
 	private long _retryDelayMax;
+	private boolean skipReconnect;
 	private double _randomizationFactor;
 	private Options opts;
 	private Backoff backoff;
 	private long _timeout;
-	ReadyState readyState;
+	public ReadyState readyState;
 	
 	final private Timer backgroundTimer = new Timer("backgroundTimer");
 	
 	enum ReadyState {
-        CLOSED, OPENING, OPEN
+        CLOSED, OPEN
     }
 	
 	
@@ -41,31 +41,54 @@ public class Retry {
         this.readyState = ReadyState.CLOSED;
     }
 	
-	
-	private class ReconnectTask extends TimerTask {
-	
-	    /*
-	     * (non-Javadoc)
-	     * 
-	     * @see java.util.TimerTask#run()
-	     */
-	    @Override
-	    public void run() {
+	private void retrying() {
+        if (this.is_retrying()&&this.getSkipReconnect()) return;  //Skip attemp
+        if (this.backoff.getAttempts() >= this._retryAttempts) {
+            System.out.println("retry failed");
+            this.backoff.reset();
+          //  this.emitAll(EVENT_RECONNECT_FAILED);
+            this.set_retrying(false);
+        } else {
+            long delay = this.backoff.duration();
+            System.out.println(String.format("will wait %dms before retry attempt", delay));
 
-	    }
+            this.set_retrying(true);
+            final Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                	if(getSkipReconnect()){
+                		return;
+                	}	
+                	else{
+                		readyState = ReadyState.OPEN;
+                        if(containerFunctions()){
+                        	set_retrying(false);
+                        }else{
+                        	setSkipReconnect(true);
+                        }
+                	}
+                	
+                }
+            }, delay);
+        }
     }
 	
-	public synchronized void retry() {
-	    if (getState() != STATE_INVALID) {
-	      invalidateTransport();
-	      setState(STATE_INTERRUPTED);
-	      if (reconnectTask != null) {
-	        reconnectTask.cancel();
-	      }
-	      reconnectTask = new ReconnectTask();
-	      backgroundTimer.schedule(reconnectTask, 1000);
-	    }
-    }
+	//This is the import function.
+	public boolean containerFunctions(){
+		return true;
+	}
+	
+	
+	public boolean getSkipReconnect() {
+		return skipReconnect;
+	}
+
+	public void setSkipReconnect(boolean skipReconnect) {
+		this.skipReconnect = skipReconnect;
+	}
+
+
 	
 	public long get_timeout() {
 		return _timeout;
@@ -131,11 +154,5 @@ public class Retry {
 	public Timer getBackgroundTimer() {
 		return backgroundTimer;
 	}
-
-	public String getSTATE_RETRYING() {
-		return STATE_RETRYING;
-	}
-
-
 
 }
