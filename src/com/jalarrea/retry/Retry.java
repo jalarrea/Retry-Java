@@ -41,7 +41,7 @@ public class Retry {
         this.readyState = ReadyState.CLOSED;
     }
 	
-	private void retrying() {
+	public void retrying() {
         if (this.is_retrying()&&this.getSkipReconnect()) return;  //Skip attemp
         if (this.backoff.getAttempts() >= this._retryAttempts) {
             System.out.println("retry failed");
@@ -62,7 +62,8 @@ public class Retry {
                 	}	
                 	else{
                 		readyState = ReadyState.OPEN;
-                        if(containerFunctions()){
+                        if(containerFunctions()&&getSkipReconnect()){
+                        	setSkipReconnect(true);
                         	set_retrying(true);
                         	backoff.reset();
                         	readyState = ReadyState.CLOSED;
