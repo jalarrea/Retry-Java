@@ -9,16 +9,16 @@ This library is based on `http://supercoderz.in/things-to-consider-when-building
 
 ####How to use this library?
 ```java 
-  public class RetryChild extends Retry{
-    public RetryChild(com.jalarrea.retry.Options options){
-      super(options);
-		}
-		@Override
-		public boolean containerFunctions(){
-			//TODO:Put your call of request get or post here
-			//You can use setSkipReconnect(true); to retry success or setSkipReconnect(false); to fail
-			return true;
-		}
+public class RetryChild extends Retry{
+  	public RetryChild(com.jalarrea.retry.Options options){
+  		super(options);
+  	}
+	@Override
+	public boolean containerFunctions(){
+		//TODO:Put your call of request get or post here
+		//You can use setSkipReconnect(true); to retry success or setSkipReconnect(false); to fail
+		return true;
 	}
+}
 ```
 
